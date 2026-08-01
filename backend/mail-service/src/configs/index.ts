@@ -1,12 +1,15 @@
 import "dotenv/config";
 
 export const config = {
-  PORT: process.env.PORT || 5300,
-  DATABASE_URI: process.env.MONGO_URI,
-  REDIS_URI: process.env.REDIS_URI,
+  PORT: process.env.PORT || 5302,
   RABBITMQ_HOST: process.env.RABBITMQ_HOST,
   RABBITMQ_USERNAME: process.env.RABBITMQ_USERNAME,
   RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD,
   RABBITMQ_PORT: Number(process.env.RABBITMQ_PORT),
-  JWT_SECRET: process.env.JWT_SECRET,
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASS: process.env.SMTP_PASS,
 };
+
+if (!config.SMTP_USER || !config.SMTP_PASS) {
+  throw new Error("SMTP user or password is missing");
+}

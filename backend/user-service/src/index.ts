@@ -1,17 +1,22 @@
 import express from "express";
+import cors from "cors";
 import { config } from "./configs/index.js";
 import connectDb from "./configs/mongo.js";
-import connectRedis from "./configs/redis.js";
 import connectRabbitMq from "./configs/rabbitmq.js";
-import userRoutes from "./routes/user.js"
+import userRoutes from "./routes/user.js";
+import { connectRedis } from "./configs/redis.js";
 
 const app = express();
 
-connectDb();
-connectRedis();
-connectRabbitMq();
+await connectDb();
+await connectRedis();
+await connectRabbitMq();
 
-app.use("/user", userRoutes);
+app.use(express.json());
+
+app.use(cors());
+
+app.use("/api/v1/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello from index.js of chat-service</h1>");

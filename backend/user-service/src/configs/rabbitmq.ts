@@ -30,17 +30,16 @@ const connectRabbitMq = async () => {
   }
 };
 
-const publishToQueue = (queueName: string, message: any) => {
+export const publishToQueue = (queueName: string, message: any) => {
   if (!channel) {
     console.log("RabbitMq Channel is missing");
     return;
   }
 
-  channel.assertQueue(queueName, {durable: true});
+  channel.assertQueue(queueName, { durable: true });
   channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)), {
-    persistent: true
-  })
-
-}
+    persistent: true,
+  });
+};
 
 export default connectRabbitMq;
