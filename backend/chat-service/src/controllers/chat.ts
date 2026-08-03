@@ -68,8 +68,31 @@ const sendMessage = TryCatch(
   }
 );
 
+const getMessagesByChat = TryCatch(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user?._id;
+    const { chatId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!chatId) {
+      return res.status(401).json({ message: "ChatId is required" });
+    }
+
+    const { messages, user } = await chatService.getMessagesByChat(
+      userId,
+      chatId
+    );
+
+    return res.json({ messages: messages, user: user });
+  }
+);
+
 export const chatController = {
   createNewChat,
   getAllChats,
   sendMessage,
+  getMessagesByChat,
 };

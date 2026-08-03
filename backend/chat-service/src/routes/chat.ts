@@ -13,5 +13,6 @@ router.post(
   upload.single("image"),
   chatController.sendMessage
 );
+router.get('/:chatId', isAuth, chatController.getMessagesByChat)
 
 export default router;

@@ -58,7 +58,7 @@ const getAllChats = async (userId: string) => {
   );
 };
 
-const sendMessage = async (senderId, chatId, text, imageFile) => {
+const sendMessage = async (senderId: string, chatId: string, text: string, imageFile: string) => {
   const chat = await Chat.findById(chatId);
 
   if (!chat) {
@@ -72,7 +72,7 @@ const sendMessage = async (senderId, chatId, text, imageFile) => {
   if (!isUserInChat) {
     throw new Error("You are not a participant of this chat");
   }
-  const otherUserId = chat.users.some(
+  const otherUserId = chat.users.find(
     (userId) => userId.toString() !== senderId.toString()
   );
 
@@ -125,8 +125,69 @@ const sendMessage = async (senderId, chatId, text, imageFile) => {
   return { savedMessage };
 };
 
+const getMessagesByChat = async (userId: string, chatId: string) => {
+  const chat = await Chat.findById(userId);
+
+  if (!chat) {
+    throw new Error("Chat not Found");
+  }
+
+  const isUserInChat = chat.users.some(
+    (userId) => userId.toString() === userId.toString()
+  );
+
+  if (!isUserInChat) {
+    throw new Error("You are not a participant of this chat");
+  }
+
+  const messagesToMarkSeen = await Message.findOne({
+    chatId,
+    sender: { $ne: userId },
+    seen: false,
+  });
+
+  await Message.updateMany(
+    {
+      chatId,
+      sender: { $ne: userId },
+      seen: false,
+    },
+    {
+      seen: true,
+      seenAt: new Date(),
+    }
+  );
+
+  const messages = await Message.find({ chatId }).sort({ createdAt: -1 });
+
+  const otherUserId = chat.users.find(
+    (userid) => userid.toString() !== userId.toString()
+  );
+
+  try {
+    const data = await axios.get(
+      `${config.USER_SERVICE_URL}/api/v1/user/user/${otherUserId}`
+    );
+
+    if (!otherUserId) {
+      throw new Error("No other user");
+    }
+
+    //socket
+
+    return { messages, data };
+  } catch (error) {
+    console.log(error);
+    return {
+      messages,
+      user: { _id: otherUserId, name: "Unknown User" },
+    };
+  }
+};
+
 export const chatService = {
   createNewChat,
   getAllChats,
   sendMessage,
+  getMessagesByChat
 };
