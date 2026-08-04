@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary"; // const v2 = {}  const cloudinary = v2
 import { config } from "./index.js";
 
 if (!config.CLOUDINARY_CLOUD_NAME) {

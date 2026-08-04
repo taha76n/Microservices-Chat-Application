@@ -3,6 +3,7 @@ import { redisClient } from "../configs/redis.js";
 import crypto from "node:crypto";
 import { User } from "../model/user.js";
 import { generateToken } from "../utils/generateToken.js";
+import { BadRequestError, TooManyRequestsError, UnauthorizedError } from "../utils/error.js";
 
 const userLogin = async (email: string) => {
   const rateLimitKey = `otp:email:${email}`;
@@ -10,7 +11,7 @@ const userLogin = async (email: string) => {
   const rateLimit = await redisClient.get(rateLimitKey);
 
   if (rateLimit) {
-    throw new Error("Too many requests. please wait before requesting new otp");
+    throw new TooManyRequestsError("Too many requests. please wait before requesting new otp");
   }
 
   const otp = crypto.randomInt(10000, 1000000).toString();
@@ -39,7 +40,7 @@ const verifyUser = async (otp: string, email: string) => {
   const rateLimit = await redisClient.get(rateLimitKey);
 
   if (rateLimit) {
-    throw new Error("Too many requests. please wait before requesting new otp");
+    throw new TooManyRequestsError("Too many requests. please wait before requesting new otp");
   }
 
   const otpKey = `otp:${email}`;
@@ -47,7 +48,7 @@ const verifyUser = async (otp: string, email: string) => {
   const savedOtpKey = await redisClient.get(otpKey);
 
   if (!savedOtpKey || otp !== savedOtpKey) {
-    throw new Error("Invalid or Expired Otp");
+    throw new BadRequestError("Invalid or Expired Otp");
   }
 
   await redisClient.del(otpKey);
@@ -75,7 +76,7 @@ const updateName = async (userId: any, userName: string) => {
   const user = await User.findById(userId);
 
   if (!user) {
-    throw new Error("Please Login");
+    throw new UnauthorizedError("Please Login");
   }
 
   user.userName = userName;

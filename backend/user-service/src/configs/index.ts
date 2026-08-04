@@ -9,4 +9,6 @@ export const config = {
   RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD,
   RABBITMQ_PORT: Number(process.env.RABBITMQ_PORT),
   JWT_SECRET: process.env.JWT_SECRET,
+  SERVICE_NAME: process.env.SERVICE_NAME,
+  NODE_ENV: process.env.NODE_ENV,
 };

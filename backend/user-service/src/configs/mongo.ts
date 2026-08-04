@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { config } from "./index.js";
+import { logger } from "./logger.js";
 
 const connectDb = async () => {
   if (!config.DATABASE_URI) {
@@ -10,9 +11,11 @@ const connectDb = async () => {
     await mongoose.connect(config.DATABASE_URI, {
       dbName: "microservicechatapp-user-service",
     });
-    console.log("MongoDB connected successfully");
+    logger.info("MongoDB connected successfully");
   } catch (error) {
-    console.log("MongoDB connection Failed", error);
+    logger.error("MongoDB connection Failed");
+    logger.error(error);
+
     process.exit(1);
   }
 };

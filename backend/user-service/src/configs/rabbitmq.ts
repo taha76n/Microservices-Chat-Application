@@ -1,5 +1,6 @@
 import amqp from "amqplib";
 import { config } from "./index.js";
+import { logger } from "./logger.js";
 
 let channel: amqp.Channel;
 
@@ -24,15 +25,15 @@ const connectRabbitMq = async () => {
 
     channel = await connection.createChannel();
 
-    console.log("Connected to Rabbitmq");
+    logger.info("Connected to Rabbitmq");
   } catch (error) {
-    console.log("Failed to connect to Rabbitmq");
+    logger.info("Failed to connect to Rabbitmq");
   }
 };
 
 export const publishToQueue = (queueName: string, message: any) => {
   if (!channel) {
-    console.log("RabbitMq Channel is missing");
+    logger.info("RabbitMq Channel is missing");
     return;
   }
 

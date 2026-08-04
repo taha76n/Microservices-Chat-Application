@@ -5,8 +5,10 @@ import { config } from "../configs/index.js";
 
 const createNewChat = async (userId: string, otherUserId: string) => {
   const existingChat = await Chat.findOne({
-    $all: [userId, otherUserId],
-    $size: 2,
+    users: {
+      $all: [userId, otherUserId],
+      $size: 2,
+    },
   });
 
   if (existingChat) {
@@ -19,11 +21,11 @@ const createNewChat = async (userId: string, otherUserId: string) => {
 };
 
 const getAllChats = async (userId: string) => {
-  const chats = await Chat.findOne({ users: userId }).sort({ updatedAt: -1 });
+  const chats = await Chat.find({ users: userId }).sort({ updatedAt: -1 });
 
   const chatsWithUserData = await Promise.all(
     chats.map(async (chat) => {
-      const otherUserId = chats.users.find((id) => id !== userId);
+      const otherUserId = chat.users.find((id) => id !== userId);
       const unseenCount = await Message.countDocuments({
         _id: chat._id,
         sender: { $ne: userId },
@@ -58,7 +60,12 @@ const getAllChats = async (userId: string) => {
   );
 };
 
-const sendMessage = async (senderId: string, chatId: string, text: string, imageFile: string) => {
+const sendMessage = async (
+  senderId: string,
+  chatId: string,
+  text: string,
+  imageFile: Express.Multer.File
+) => {
   const chat = await Chat.findById(chatId);
 
   if (!chat) {
@@ -82,17 +89,30 @@ const sendMessage = async (senderId: string, chatId: string, text: string, image
 
   //socket setup
 
-  let messageData = {
+  interface MessageData {
+    chatId: string;
+    sender: string;
+    seen: boolean;
+    seenAt?: Date;
+    text?: string;
+    image?: {
+      url: string;
+      // publicId: string;
+    };
+    messageType: "text" | "image";
+  }
+
+  let messageData: MessageData = {
     chatId: chatId,
     sender: senderId,
     seen: false,
-    seenAt: undefined,
+    messageType: "text",
   };
 
   if (imageFile) {
     messageData.image = {
       url: imageFile.path,
-      publicId: imageFile.fileName,
+      // publicId: imageFile.fileName,
     };
 
     messageData.messageType = "image";
@@ -126,14 +146,14 @@ const sendMessage = async (senderId: string, chatId: string, text: string, image
 };
 
 const getMessagesByChat = async (userId: string, chatId: string) => {
-  const chat = await Chat.findById(userId);
+  const chat = await Chat.findById(chatId);
 
   if (!chat) {
     throw new Error("Chat not Found");
   }
 
   const isUserInChat = chat.users.some(
-    (userId) => userId.toString() === userId.toString()
+    (chatUserId) => chatUserId.toString() === userId.toString()
   );
 
   if (!isUserInChat) {
@@ -189,5 +209,5 @@ export const chatService = {
   createNewChat,
   getAllChats,
   sendMessage,
-  getMessagesByChat
+  getMessagesByChat,
 };

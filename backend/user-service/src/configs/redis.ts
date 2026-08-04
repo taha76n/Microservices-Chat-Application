@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { config } from "./index.js";
+import { logger } from "./logger.js";
 
 if (!config.REDIS_URI) {
   throw new Error("REDIS_URI is missing")
@@ -9,11 +10,11 @@ export const redisClient = createClient({
 });
 
 redisClient.on("connect", () => {
-    console.log("Redis Connected");
+    logger.info("Redis Connected");
 });
 
 redisClient.on("error", (err) => {
-    console.error("Redis Error:", err);
+    logger.error("Redis Error:", err);
 });
 
 export const connectRedis = async () => {

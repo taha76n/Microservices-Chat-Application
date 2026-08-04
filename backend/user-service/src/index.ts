@@ -5,8 +5,13 @@ import connectDb from "./configs/mongo.js";
 import connectRabbitMq from "./configs/rabbitmq.js";
 import userRoutes from "./routes/user.js";
 import { connectRedis } from "./configs/redis.js";
+import { requestLoggerMiddleware } from "./middlewares/requestLogger.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import { logger } from "./configs/logger.js";
 
 const app = express();
+
+app.use(requestLoggerMiddleware);
 
 await connectDb();
 await connectRedis();
@@ -22,6 +27,8 @@ app.get("/", (req, res) => {
   res.send("<h1>Hello from index.js of chat-service</h1>");
 });
 
+app.use(errorHandler)
+
 app.listen(config.PORT, () => {
-  console.log(`Server listening on port ${config.PORT}`);
+  logger.info(`Server listening on port ${config.PORT}`);
 });
