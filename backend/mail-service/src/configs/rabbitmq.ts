@@ -1,5 +1,6 @@
 import amqp from "amqplib";
 import { config } from "./index.js";
+import { logger } from "./logger.js";
 
 export let channel: amqp.Channel;
 
@@ -10,7 +11,7 @@ export const connectRabbitMq = async () => {
     !config.RABBITMQ_USERNAME ||
     !config.RABBITMQ_PASSWORD
   ) {
-    console.log("RabbitMq configs are missing");
+    logger.info("RabbitMq configs are missing");
     return;
   }
 
@@ -24,8 +25,8 @@ export const connectRabbitMq = async () => {
     });
 
     channel = await connection.createChannel();
-    console.log("RabbitMq connected successfully");
+    logger.info("RabbitMq connected successfully");
   } catch (error) {
-    console.log("Rabbitmq Connection Failed");
+    logger.info("Rabbitmq Connection Failed");
   }
 };

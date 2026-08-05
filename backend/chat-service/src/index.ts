@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "./configs/index.js";
 import chatRoutes from "./routes/chat.js";
+import { logger } from "./configs/logger.js";
 
 const app = express();
 
@@ -11,5 +12,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(config.PORT, () => {
-  console.log(`Server listening on port ${config.PORT}`);
+  logger.info(`Server listening on port ${config.PORT}`);
 });

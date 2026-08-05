@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { config } from "../configs/index.js";
+import { logger } from "../configs/logger.js";
 
 export interface IUser extends Document {
   _id: string,
@@ -40,6 +41,6 @@ export const isAuth = async (
     next();
   } catch (error) {
     res.status(401).json({ message: "Please Login - JWT Error" });
-    console.log(error);
+    logger.error(error);
   }
 };

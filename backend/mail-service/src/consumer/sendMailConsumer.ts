@@ -1,23 +1,24 @@
 import { createTransport } from "nodemailer";
 import { channel } from "../configs/rabbitmq.js";
 import { config } from "../configs/index.js";
+import { logger } from "../configs/logger.js";
 
 export const sendMailConsumer = async (queueName: string) => {
   if (!channel) {
-    console.log("Rabbitmq channel is missing");
+    logger.info("Rabbitmq channel is missing");
     return;
   }
 
   try {
     channel.assertQueue(queueName, { durable: true });
 
-    console.log(
+    logger.info(
       `sendMailConsumer started ready to consume messages from ${queueName}`
     );
 
     await channel.consume(queueName, async (msg) => {
       if (msg) {
-        console.log(`Consuming ${msg} from ${queueName}`);
+        logger.info(`Consuming ${msg} from ${queueName}`);
         try {
           const { to, subject, body } = JSON.parse(msg.content.toString());
           const transporter = createTransport({
@@ -34,14 +35,15 @@ export const sendMailConsumer = async (queueName: string) => {
             subject,
             text: body,
           });
-          console.log(`otp-email sent to ${to}`);
+          logger.info(`otp-email sent to ${to}`);
           channel.ack(msg);
         } catch (error) {
-          console.log("Failed to send otp");
+          logger.info("Failed to send otp");
         }
       }
     });
   } catch (error) {
-    console.log("Failed to start sendMail consumer", error);
+    logger.error(error)
+    logger.error("Failed to start sendMail consumer");
   }
 };

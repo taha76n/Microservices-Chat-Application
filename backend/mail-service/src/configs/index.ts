@@ -2,6 +2,8 @@ import "dotenv/config";
 
 export const config = {
   PORT: process.env.PORT || 5302,
+  SERVICE_NAME: process.env.SERVICE_NAME,
+  NODE_ENV: process.env.NODE_ENV,
   RABBITMQ_HOST: process.env.RABBITMQ_HOST,
   RABBITMQ_USERNAME: process.env.RABBITMQ_USERNAME,
   RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD,

@@ -2,6 +2,8 @@ import axios from "axios";
 import { Chat } from "../model/chat.js";
 import { Message } from "../model/messsage.js";
 import { config } from "../configs/index.js";
+import { BadRequestError, NotFoundError } from "../utils/error.js";
+import { logger } from "../configs/logger.js";
 
 const createNewChat = async (userId: string, otherUserId: string) => {
   const existingChat = await Chat.findOne({
@@ -12,7 +14,7 @@ const createNewChat = async (userId: string, otherUserId: string) => {
   });
 
   if (existingChat) {
-    throw new Error("Chat already exists");
+    throw new BadRequestError("Chat already exists");
   }
 
   const newChat = await Chat.create({ users: [userId, otherUserId] });
@@ -46,7 +48,7 @@ const getAllChats = async (userId: string) => {
           },
         };
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         return {
           user: { _id: otherUserId, name: "Unknown User" },
           chat: {
@@ -69,7 +71,7 @@ const sendMessage = async (
   const chat = await Chat.findById(chatId);
 
   if (!chat) {
-    throw new Error("Chat not Found");
+    throw new BadRequestError("Chat not Found");
   }
 
   const isUserInChat = chat.users.some(
@@ -77,14 +79,14 @@ const sendMessage = async (
   );
 
   if (!isUserInChat) {
-    throw new Error("You are not a participant of this chat");
+    throw new BadRequestError("You are not a participant of this chat");
   }
   const otherUserId = chat.users.find(
     (userId) => userId.toString() !== senderId.toString()
   );
 
   if (!otherUserId) {
-    throw new Error("No other user in this chat");
+    throw new BadRequestError("No other user in this chat");
   }
 
   //socket setup
@@ -149,7 +151,7 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
   const chat = await Chat.findById(chatId);
 
   if (!chat) {
-    throw new Error("Chat not Found");
+    throw new NotFoundError("Chat not Found");
   }
 
   const isUserInChat = chat.users.some(
@@ -157,7 +159,7 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
   );
 
   if (!isUserInChat) {
-    throw new Error("You are not a participant of this chat");
+    throw new BadRequestError("You are not a participant of this chat");
   }
 
   const messagesToMarkSeen = await Message.findOne({
