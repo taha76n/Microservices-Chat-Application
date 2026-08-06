@@ -1,7 +1,6 @@
-import type { NextFunction, Request, Response } from 'express';
-import { logger } from '../configs/logger.js';
-import { AppError } from '../utils/error.js';
-
+import type { NextFunction, Request, Response } from "express";
+import { logger } from "../configs/logger.js";
+import { AppError } from "../utils/error.js";
 
 export function errorHandler(
   err: Error,
@@ -14,7 +13,7 @@ export function errorHandler(
 
   // Determine status code
   const statusCode = err instanceof AppError ? err.statusCode : 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
 
   // Log the error
   if (err instanceof AppError && err.isOperational) {
@@ -26,7 +25,7 @@ export function errorHandler(
         route: req.route?.path ?? req.originalUrl,
         method: req.method,
       },
-      'Operational error'
+      "Operational error"
     );
   } else {
     // Unexpected / programmer errors – log as error with stack
@@ -38,13 +37,13 @@ export function errorHandler(
         route: req.route?.path ?? req.originalUrl,
         method: req.method,
       },
-      'Unhandled error'
+      "Unhandled error"
     );
   }
 
   // Send JSON response
   res.status(statusCode).json({
     success: false,
-    message: statusCode === 500 ? 'Internal Server Error' : message,
+    message: statusCode === 500 ? "Internal Server Error" : message,
   });
 }

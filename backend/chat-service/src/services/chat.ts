@@ -66,7 +66,7 @@ const sendMessage = async (
   senderId: string,
   chatId: string,
   text: string,
-  imageFile: Express.Multer.File
+  imageFile: Express.Multer.File | undefined
 ) => {
   const chat = await Chat.findById(chatId);
 

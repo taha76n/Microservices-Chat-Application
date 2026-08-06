@@ -1,10 +1,14 @@
 "use client"
 import React, { useState } from 'react'
 import { ArrowRight, Loader2, Mail } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import axios from 'axios'
+import { redirect, useRouter } from 'next/navigation'
+import axios, { AxiosError } from 'axios'
+import { useAppData } from '@/src/context/AppContext'
+import Loading from '@/src/components/Loading'
+import toast from 'react-hot-toast'
 
 const LoginPage = () => {
+  const {isAuth, loading: userLoading} = useAppData()
   const [email, setEmail] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter()
@@ -18,19 +22,25 @@ const LoginPage = () => {
       const {data} = await axios.post(`http://localhost:5301/api/v1/user/login`, {email})
       console.log(data);
       
-      alert(data.message)
+      toast.success(data.message)
       router.push(`/verify?email=${email}`)
-
-      
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof AxiosError) {
         console.log(error);
+        toast.error(error.response?.data?.message);
       }
       setLoading(false)
       
     } finally{
       setLoading(false)
     }
+  }
+
+  if (isAuth) {
+    redirect("/chat")
+  }
+  if (userLoading) {
+    return <Loading/>
   }
   return (
     <div className='min-h-screen bg-gray-900 border flex items-center justify-center p-4'>
@@ -50,16 +60,12 @@ const LoginPage = () => {
               <div className='flex items-center justify-center'>
                 {
                   loading? (<button className='bg-blue-600 flex items-center justify-center gap-2 text-white font-semibold w-full p-5 rounded-lg disabled:cursor-not-allowed disabled:opacity-50' disabled={loading}><Loader2 className='text-white'/>Sending Otp to your mail </button>) : (<button className='bg-blue-600 flex items-center justify-center gap-2 text-white font-semibold w-full p-5 cursor-pointer rounded-lg disabled:cursor-not-allowed disabled:opacity-50' disabled={loading}>Send Verification Code <ArrowRight className='text-white'/></button>)
-                }
-                
+                }  
               </div>
             </form>
-
           </div>
         </div>
-
       </div>
-
     </div>
   )
 }
