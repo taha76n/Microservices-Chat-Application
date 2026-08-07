@@ -5,13 +5,13 @@ import axios from "axios";
 import toast, {Toaster} from "react-hot-toast"
 
 
-interface User {
+export interface User {
   _id: string;
   userName: string;
   email: string;
 }
 
-interface Chat {
+export interface Chat {
   _id: string;
   users: string[];
   latestMessage: {
@@ -23,7 +23,7 @@ interface Chat {
   unseenCount?: number;
 }
 
-interface Chats {
+export interface Chats {
   _id: string;
   user: User;
   chat: Chat;
@@ -85,7 +85,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const fetchChats = async () => {
     const token = Cookies.get("token")
     try {
-      const {data} = await axios.post(`http://localhost:5302/api/v1/chat/all`, {
+      const {data} = await axios.post(`http://localhost:5300/api/v1/chat/all`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

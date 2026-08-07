@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { config } from "./configs/index.js";
 import chatRoutes from "./routes/chat.js";
 import { logger } from "./configs/logger.js";
@@ -8,9 +9,11 @@ import connectDb from "./configs/mongo.js";
 
 const app = express();
 
-await connectDb()
+
+await connectDb();
 
 app.use(express.json())
+app.use(cors())
 
 app.use(requestLoggerMiddleware)
 

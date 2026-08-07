@@ -9,7 +9,7 @@ import Loading from './Loading';
 import toast from 'react-hot-toast';
 
 const VerifyOtp = () => {
-  const {setUser, isAuth, setIsAuth, loading: userLoading} = useAppData()
+  const {setUser, isAuth, setIsAuth, loading: userLoading, fetchUsers, fetchChats} = useAppData()
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState<boolean>(false);
   const [resendLoading, setResendLoading] = useState<boolean>(false);
@@ -90,6 +90,8 @@ const VerifyOtp = () => {
       inputRefs.current[0]?.focus()
       setUser(data.user)
       setIsAuth(true)
+      fetchUsers()
+      fetchChats()
       
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -144,7 +146,7 @@ const VerifyOtp = () => {
                       onChange={e => handleInputChange(index, e.target.value)}
                       onKeyDown={e => handleKeyDown(index, e)}
                       onPaste={index === 0? handlePaste: undefined}
-                      className='w-12 h-12 text-center text-xl font-bold border-2 border-gray-600 rounded-lg bg-gray-700'/>
+                      className='w-12 h-12 text-center text-xl font-bold border-2 border-gray-600 rounded-lg text-white bg-gray-700'/>
                     ))
                   }
 
