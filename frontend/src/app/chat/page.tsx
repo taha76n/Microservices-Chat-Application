@@ -10,6 +10,7 @@ import Loading from "@/src/components/Loading";
 import ChatHeader from "@/src/components/ChatHeader";
 import ChatMessages from "@/src/components/ChatMessages";
 import MessageInput from "@/src/components/MessageInput";
+import { useSocketData } from "@/src/context/SocketContext";
 
 export interface Message {
   _id: string;
@@ -36,6 +37,9 @@ const ChatApp = () => {
     users,
     fetchChats,
   } = useAppData();
+
+  const {onlineUsers} = useSocketData()
+  
 
   const router = useRouter();
 
@@ -96,7 +100,7 @@ const ChatApp = () => {
 
   const handleSendMessage = async (
     e: React.FormEvent,
-    message: any,
+    message: string,
     imageFile?: File | null
   ) => {
     e.preventDefault();
@@ -198,6 +202,7 @@ const ChatApp = () => {
         loggedInUser={loggedInUser}
         chats={chats}
         createChat={createChat}
+        onlineUsers={onlineUsers}
       />
       <div className="flex-1 flex flex-col justify-between p-4 backdrop:blur-xl bg-white/5 border border-white/10">
         <ChatHeader

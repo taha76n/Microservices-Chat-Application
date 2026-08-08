@@ -8,9 +8,6 @@ const createNewChat = TryCatch(
   async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?._id;
     const { otherUserId } = req.body;
-
-    logger.info(userId, otherUserId)
-
     if (!userId) {
       return res.status(400).json({ message: "UserId is missing" });
     }

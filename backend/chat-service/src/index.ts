@@ -6,14 +6,12 @@ import { logger } from "./configs/logger.js";
 import { requestLoggerMiddleware } from "./middlewares/requestLogger.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import connectDb from "./configs/mongo.js";
-
-const app = express();
+import { app, server } from "./configs/socket.js";
 
 await connectDb();
 
 app.use(express.json());
 app.use(cors());
-app.use("/uploads", express.static("uploads"));
 
 app.use(requestLoggerMiddleware);
 
@@ -25,6 +23,6 @@ app.get("/", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(config.PORT, () => {
+server.listen(config.PORT, () => {
   logger.info(`Server listening on port ${config.PORT}`);
 });

@@ -6,7 +6,7 @@ interface MessageInputProps {
   selectedUser: string | null;
   message: string;
   setMessage: (value: string) => void;
-  handleSendMessage: (e: any, imageFile?: File | null) => void;
+  handleSendMessage: (e: React.FormEvent, message:string, imageFile?: File | null) => void;
 }
 const MessageInput = ({
   selectedUser,

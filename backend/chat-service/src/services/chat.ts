@@ -34,7 +34,6 @@ const getAllChats = async (userId: string) => {
         sender: { $ne: userId },
         seen: false,
       });
-      console.log(unseenCount);
       
 
       try {
@@ -128,7 +127,6 @@ const sendMessage = async (
   //   messageData.messageType = "text";
   // }
 
-  console.log(imageFile)
 
   if (imageFile) {
     // Upload the image buffer to Cloudinary
