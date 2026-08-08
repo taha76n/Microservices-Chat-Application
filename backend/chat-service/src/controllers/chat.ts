@@ -2,11 +2,14 @@ import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/isAuth.js";
 import { TryCatch } from "../utils/TryCatch.js";
 import { chatService } from "../services/chat.js";
+import { logger } from "../configs/logger.js";
 
 const createNewChat = TryCatch(
   async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?._id;
     const { otherUserId } = req.body;
+
+    logger.info(userId, otherUserId)
 
     if (!userId) {
       return res.status(400).json({ message: "UserId is missing" });
@@ -32,7 +35,9 @@ const getAllChats = TryCatch(
       return res.status(400).json({ message: "userId is missing" });
     }
 
-    const chats = chatService.getAllChats(userId);
+    const chats = await chatService.getAllChats(userId);
+
+    return res.status(200).json({message: "Chats Fetched Successfully",  chats:chats})
   }
 );
 
@@ -71,7 +76,7 @@ const sendMessage = TryCatch(
 const getMessagesByChat = TryCatch(
   async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?._id;
-    const { chatId } = req.body;
+    const { chatId } = req.params;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });

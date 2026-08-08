@@ -4,6 +4,7 @@ import { Message } from "../model/messsage.js";
 import { config } from "../configs/index.js";
 import { BadRequestError, NotFoundError } from "../utils/error.js";
 import { logger } from "../configs/logger.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 
 const createNewChat = async (userId: string, otherUserId: string) => {
   const existingChat = await Chat.findOne({
@@ -29,14 +30,16 @@ const getAllChats = async (userId: string) => {
     chats.map(async (chat) => {
       const otherUserId = chat.users.find((id) => id !== userId);
       const unseenCount = await Message.countDocuments({
-        _id: chat._id,
+        chatId: chat._id,
         sender: { $ne: userId },
         seen: false,
       });
+      console.log(unseenCount);
+      
 
       try {
-        const data = await axios.get(
-          `${config.USER_SERVICE_URL}/api/v1/user/user/${otherUserId}`
+        const {data} = await axios.get(
+          `http://localhost:${config.USER_SERVICE_URL}/api/v1/user/user/${otherUserId}`
         );
 
         return {
@@ -60,6 +63,7 @@ const getAllChats = async (userId: string) => {
       }
     })
   );
+  return chatsWithUserData;
 };
 
 const sendMessage = async (
@@ -111,12 +115,28 @@ const sendMessage = async (
     messageType: "text",
   };
 
-  if (imageFile) {
-    messageData.image = {
-      url: imageFile.path,
-      // publicId: imageFile.fileName,
-    };
+  // if (imageFile) {
+  //   messageData.image = {
+  //     url: imageFile.path,
+  //     publicId: imageFile.fileName,
+  //   };
 
+  //   messageData.messageType = "image";
+  //   messageData.text = text || "";
+  // } else {
+  //   messageData.text = text;
+  //   messageData.messageType = "text";
+  // }
+
+  console.log(imageFile)
+
+  if (imageFile) {
+    // Upload the image buffer to Cloudinary
+    const imageUrl = await uploadToCloudinary(imageFile); // <-- this returns the secure URL
+    messageData.image = {
+      url: imageUrl,
+      // publicId: result.public_id 
+    };
     messageData.messageType = "image";
     messageData.text = text || "";
   } else {
@@ -180,7 +200,7 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
     }
   );
 
-  const messages = await Message.find({ chatId }).sort({ createdAt: -1 });
+  const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
 
   const otherUserId = chat.users.find(
     (userid) => userid.toString() !== userId.toString()
@@ -197,12 +217,12 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
 
     //socket
 
-    return { messages, data };
+    return { messages, otherUserId };
   } catch (error) {
     console.log(error);
     return {
       messages,
-      user: { _id: otherUserId, name: "Unknown User" },
+      user: { _id: otherUserId, userName: "Unknown User" },
     };
   }
 };

@@ -26,6 +26,8 @@ export const isAuth = async (
     }
 
     const token = authHeader.split(" ")[1]!;
+    console.log(token);
+    
 
     const decoded = jwt.verify(
       token,
@@ -38,6 +40,8 @@ export const isAuth = async (
     }
 
     req.user = decoded.user;
+    console.log(req.user);
+    
     next();
   } catch (error) {
     res.status(401).json({ message: "Please Login - JWT Error" });

@@ -4,7 +4,6 @@ import moment from "moment";
 import { Message } from '../app/chat/page';
 import { User } from '../context/AppContext';
 import { Check, CheckCheck } from 'lucide-react';
-import { spawn } from 'child_process';
 
 interface ChatMessageProps {
   selectedUser: string | null;
@@ -35,7 +34,7 @@ const ChatMessages = ({selectedUser, messages, loggedInUser}: ChatMessageProps) 
   }, [selectedUser, uniqueMessages])
   return (
     <div className='flex-1 overflow-hidden'>
-      <div className="h-full max-h-[calc(100vh-215px)] overflow-y-2 p-2 space-y-2 custom-scroll">
+      <div className="h-full max-h-[calc(100vh-215px)] overflow-y-auto p-2 space-y-2 custom-scroll scrollbar-none">
         {
           !selectedUser ? <p className="text-gray-400 text-center mt-20">Please select a user to start chatting</p> : <>
           {
@@ -57,7 +56,7 @@ const ChatMessages = ({selectedUser, messages, loggedInUser}: ChatMessageProps) 
                         </div>
                       )
                     }
-                    {e.text && <p className='mt-1'>e.text</p>}
+                    {e.text && <p className='mt-1'>{e.text}</p>}
                   </div>
                   <div className={`flex items-center gap-1 text-xs text-gray-400 ${
                     isSentByMe? "pr-2 flex-row-reverse": "pl-2"

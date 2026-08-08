@@ -9,6 +9,7 @@ interface ChatHeaderProps {
 }
 
 const ChatHeader = ({user, setSidebarOpen, isTyping}: ChatHeaderProps) => {
+
   return (
     <>
     {/* mobile menu toggle */}
@@ -33,7 +34,8 @@ const ChatHeader = ({user, setSidebarOpen, isTyping}: ChatHeaderProps) => {
           {/* user info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1">
-              <h2 className='text-2xl font-bold text-white truncate'>{user.userName}</h2>
+              
+              <h2 className='text-2xl font-bold text-white truncate'>{user?.userName}</h2>
             </div>
           </div>
           {/* to show typing status */}

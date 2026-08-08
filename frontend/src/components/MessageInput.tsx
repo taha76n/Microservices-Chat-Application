@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Message } from "../app/chat/page";
 import { Loader2, Paperclip, Send, X } from "lucide-react";
 
 interface MessageInputProps {
@@ -26,7 +25,7 @@ const MessageInput = ({
     }
 
     setIsUploading(true);
-    await handleSendMessage(message, imageFile);
+    handleSendMessage(e, message, imageFile);
     setImageFile(null);
     setIsUploading(false);
   };
@@ -36,7 +35,7 @@ const MessageInput = ({
       className="flex flex-col gap-2 border-t border-gray-700 pt-2"
     >
       {imageFile && (
-        <div className="relativew-fit">
+        <div className="relative w-fit">
           <img
             src={URL.createObjectURL(imageFile)}
             alt="preview"
@@ -53,7 +52,7 @@ const MessageInput = ({
       )}
       <div className="flex items-center gap-2">
         <label className="cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-lg px-3 py-2 transition-colors"><Paperclip size={18} className="text-gray-300"/>
-        <input type="file" accept="/image/*" className="hidden" onChange={(e) => { const file = e.target?.files?.[0]
+        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target?.files?.[0]
         if (file && file.type.startsWith("image/")) {
           setImageFile(file)
           

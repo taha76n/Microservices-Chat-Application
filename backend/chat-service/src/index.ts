@@ -9,21 +9,21 @@ import connectDb from "./configs/mongo.js";
 
 const app = express();
 
-
 await connectDb();
 
-app.use(express.json())
-app.use(cors())
+app.use(express.json());
+app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
-app.use(requestLoggerMiddleware)
+app.use(requestLoggerMiddleware);
 
-app.use("api/v1/chat", chatRoutes);
+app.use("/api/v1/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello from index.js of chat-service</h1>");
 });
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(config.PORT, () => {
   logger.info(`Server listening on port ${config.PORT}`);

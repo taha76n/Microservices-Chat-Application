@@ -18,8 +18,12 @@ interface ChatSidebarProps {
   createChat: (u: User) => void;
 }
 
+
+
 const ChatSidebar = ({sidebarOpen, setSidebarOpen, showAllUsers, setShowAllUsers, users, loggedInUser, chats, selectedUser, setSelectedUser, handleLogout, createChat}: ChatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("")
+  console.log(chats);
+  
   return (
     <aside className={`fixed z-20 sm:static top-0 left-0 h-screen w-80 bg-gray-900 border-r border-gray-500 transform ${
       sidebarOpen? "translate-x-0" : "translate-x-full"
@@ -55,22 +59,28 @@ const ChatSidebar = ({sidebarOpen, setSidebarOpen, showAllUsers, setShowAllUsers
       </div>
       {/* content */}
       {
-        showAllUsers? (
-        <div className=' space-y-4 h-full'>
-          <div className='relative'>
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h=4 text-gray-400"/>
-            <input className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-400" type="text" placeholder='Search Users...'
-            value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-
-          </div>
-          {/* userlist */}
-          <div className='space-y-2 overflow-y-auto h-full pb-4'>
-            {
-              users?.filter((u) => u._id !== loggedInUser?._id && u.userName.toLowerCase().includes(searchQuery.toLowerCase())).map((u) =>(
-                <button key={u._id} className='w-full text-left p-4 rounded-lg border-gray-700  hover:border-gray-600 hover:bg-gray-800 transition-colors'
+          showAllUsers ? (
+            <div className="flex flex-col h-full">
+              <div className="relative px-4 pt-2">
+                <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"/>
+                <input
+                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-400 rounded-lg"
+                  type="text"
+                  placeholder="Search Users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto pb-4 space-y-2 px-4">
+                {
+                  users?.filter(
+                    (u) => u._id !== loggedInUser?._id &&
+                    u.userName.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).map((u) => (
+                    <button key={u._id} className='w-full mt-2 text-left p-4 rounded-lg border-gray-700  hover:border-gray-600 hover:bg-gray-800 transition-colors'
                 onClick={() => createChat(u)}>
                   <div className='flex items-center gap-3'>
-                    <div className='relative'>
+                    <div className='relative flex items-center gap-4'>
                       <UserCircle className='w-6 h-6 text-gray-300'/>
                       <div className='flex-1 min-w-0'>
                     <span className='font-medium text-white'>{u.userName}</span>
@@ -83,17 +93,14 @@ const ChatSidebar = ({sidebarOpen, setSidebarOpen, showAllUsers, setShowAllUsers
                   {/* online symbol */}
                   
                 </button>
-
-              ))
-            }
-
-          </div>
-
-        </div>
-      ) : (
+                  ))
+                }
+              </div>
+            </div>
+          ) : (
         chats && chats.length > 0 ? <div className='space-y-2 overflow-y-auto h-full pb-4'>
           {
-            chats.map((chat) =>{
+            chats?.map((chat) =>{
               const latestMessage = chat.chat.latestMessage
               const isUserSelected = selectedUser === chat.user._id
               const isSentByMe = latestMessage?.sender === loggedInUser?._id
@@ -120,7 +127,7 @@ const ChatSidebar = ({sidebarOpen, setSidebarOpen, showAllUsers, setShowAllUsers
                         <div className='flex items-center justify-between mb-1'>
                           <span className={`font-semibold truncate ${
                             isUserSelected? "text-white" : "text-gray-200"
-                          }`}>{chat.user.userName}</span>
+                          }`}>{chat.user.user.userName}</span>
                           {
                             unseenCount > 0 &&  (<div className='bg-red-600 text-white text-xs font-bold rounded-full min-w-5.5 h-5.5 flex items-center justify-center px-2'>
                               {

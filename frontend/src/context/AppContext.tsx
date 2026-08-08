@@ -62,7 +62,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           Authorization: `Bearer ${token}`
         }}
       )
-      setUser(data);
+      setUser(data.user);
       setIsAuth(true);
       setLoading(false)
       
@@ -85,7 +85,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const fetchChats = async () => {
     const token = Cookies.get("token")
     try {
-      const {data} = await axios.post(`http://localhost:5300/api/v1/chat/all`, {
+      const {data} = await axios.post(`http://localhost:5300/api/v1/chat/all`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -102,12 +102,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const fetchUsers = async () => {
     const token = Cookies.get("token")
     try {
-      const {data} = await axios.post(`http://localhost:5301/api/v1/user/user/all`, {
+      const {data} = await axios.get(`http://localhost:5301/api/v1/user/user/all`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-      setUsers(data)      
+      setUsers(data.users)      
     } catch (error) {
       console.log(error)
     }
