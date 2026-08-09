@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Loader2, Paperclip, Send, X } from "lucide-react";
+import Image from "next/image";
 
 interface MessageInputProps {
   selectedUser: string | null;
@@ -36,7 +37,7 @@ const MessageInput = ({
     >
       {imageFile && (
         <div className="relative w-fit">
-          <img
+          <Image
             src={URL.createObjectURL(imageFile)}
             alt="preview"
             className="w-24 h-24 object-cover rounded-lg border border-gray-600"

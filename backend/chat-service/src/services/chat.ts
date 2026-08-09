@@ -5,6 +5,7 @@ import { config } from "../configs/index.js";
 import { BadRequestError, NotFoundError } from "../utils/error.js";
 import { logger } from "../configs/logger.js";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import { getReceiverSocketId, io } from "../configs/socket.js";
 
 const createNewChat = async (userId: string, otherUserId: string) => {
   const existingChat = await Chat.findOne({
@@ -34,10 +35,9 @@ const getAllChats = async (userId: string) => {
         sender: { $ne: userId },
         seen: false,
       });
-      
 
       try {
-        const {data} = await axios.get(
+        const { data } = await axios.get(
           `http://localhost:${config.USER_SERVICE_URL}/api/v1/user/user/${otherUserId}`
         );
 
@@ -94,6 +94,16 @@ const sendMessage = async (
 
   //socket setup
 
+  const receiverSocketId = getReceiverSocketId(otherUserId.toString());
+  let isReceiverInChatRoom = false;
+
+  if (receiverSocketId) {
+    const receiverSocket = io.sockets.sockets.get(receiverSocketId);
+    if (receiverSocket && receiverSocket.rooms.has(chatId)) {
+      isReceiverInChatRoom = true;
+    }
+  }
+
   interface MessageData {
     chatId: string;
     sender: string;
@@ -110,7 +120,8 @@ const sendMessage = async (
   let messageData: MessageData = {
     chatId: chatId,
     sender: senderId,
-    seen: false,
+    seen: isReceiverInChatRoom,
+    seenAt: isReceiverInChatRoom? new Date() : undefined,
     messageType: "text",
   };
 
@@ -127,13 +138,12 @@ const sendMessage = async (
   //   messageData.messageType = "text";
   // }
 
-
   if (imageFile) {
     // Upload the image buffer to Cloudinary
     const imageUrl = await uploadToCloudinary(imageFile); // <-- this returns the secure URL
     messageData.image = {
       url: imageUrl,
-      // publicId: result.public_id 
+      // publicId: result.public_id
     };
     messageData.messageType = "image";
     messageData.text = text || "";
@@ -161,6 +171,25 @@ const sendMessage = async (
   );
 
   // emit to socket
+  io.to(chatId).emit("newMessage", savedMessage)
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("newMessage", savedMessage)
+  }
+
+  const senderSockedId = getReceiverSocketId(senderId.toString())
+  if (senderSockedId) {
+    io.to(senderSockedId).emit("newMessage", savedMessage)
+  }
+
+  if (isReceiverInChatRoom && senderSockedId) {
+    io.to(senderSockedId).emit("messageSeen", {
+      chatId: chatId,
+      seenBy: otherUserId,
+      messageIds: [savedMessage._id]
+    })
+    
+  }
+
 
   return { savedMessage };
 };
@@ -214,6 +243,18 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
     }
 
     //socket
+
+    if (messagesToMarkSeen.length > 0) {
+      const otherUserSocketId = getReceiverSocketId(otherUserId.toString())
+      if (otherUserSocketId) {
+        io.to(otherUserSocketId).emit("messagesSeen", {
+          chatId: chatId,
+          seenBy: userId,
+          messageIds: messagesToMarkSeen.map((msg) => msg._id)
+
+        })
+      }
+    }
 
     return { messages, otherUserId };
   } catch (error) {

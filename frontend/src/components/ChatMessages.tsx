@@ -4,6 +4,7 @@ import moment from "moment";
 import { Message } from '../app/chat/page';
 import { User } from '../context/AppContext';
 import { Check, CheckCheck } from 'lucide-react';
+import Image from 'next/image';
 
 interface ChatMessageProps {
   selectedUser: string | null;
@@ -52,7 +53,7 @@ const ChatMessages = ({selectedUser, messages, loggedInUser}: ChatMessageProps) 
                     {
                       e.messageType === "image" && e.image && (
                         <div className="relative group">
-                          <img src={e.image.url} alt="shared image" className='max-w-full h-auto rounded-lg' />
+                          <Image src={e.image.url} alt="shared image" className='max-w-full h-auto rounded-lg' />
                         </div>
                       )
                     }

@@ -1,7 +1,7 @@
 "use client"
 import axios, { AxiosError } from 'axios';
 import { ArrowRight, Loader2, Lock } from 'lucide-react'
-import { redirect, useRouter, useSearchParams } from 'next/navigation';
+import { redirect, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
 import Cookies from 'js-cookie';
 import { useAppData } from '../context/AppContext';
@@ -16,8 +16,6 @@ const VerifyOtp = () => {
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(60);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-
-  const router = useRouter();
   
   const searchParams = useSearchParams();
 

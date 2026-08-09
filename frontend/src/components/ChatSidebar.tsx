@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { User } from "../context/AppContext";
+import { Chats, User } from "../context/AppContext";
 import {
   CornerDownRight,
   CornerLeftUp,
@@ -20,7 +20,7 @@ interface ChatSidebarProps {
   setShowAllUsers: (show: boolean | ((prev: boolean) => boolean)) => void;
   users: User[] | null;
   loggedInUser: User | null;
-  chats: any | null;
+  chats: Chats[] | null;
   selectedUser: string | null;
   setSelectedUser: (userId: string | null) => void;
   handleLogout: () => void;
@@ -143,9 +143,9 @@ const ChatSidebar = ({
 
             return (
               <button
-                key={chat.chat._id}
+                key={chat.chat?._id}
                 onClick={() => {
-                  setSelectedUser(chat.chat._id);
+                  setSelectedUser(chat.chat?._id);
                   setSidebarOpen(false);
                 }}
                 className={`w-full text-left p-4 rounded-lg transition-colors ${
@@ -160,7 +160,7 @@ const ChatSidebar = ({
                       <UserCircle className="w-7 h-7 text-gray-300" />
                       {/* onlineuser work */}
                     </div>
-                    {onlineUsers?.includes(chat.user._id) && (
+                    {onlineUsers?.includes(chat.user?._id) && (
                       <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-gray-900"></span>
                     )}
                   </div>
@@ -171,7 +171,7 @@ const ChatSidebar = ({
                           isUserSelected ? "text-white" : "text-gray-200"
                         }`}
                       >
-                        {chat.user.user.userName}
+                        {chat?.user?.user?.userName}
                       </span>
                       {unseenCount > 0 && (
                         <div className="bg-red-600 text-white text-xs font-bold rounded-full min-w-5.5 h-5.5 flex items-center justify-center px-2">
@@ -193,7 +193,7 @@ const ChatSidebar = ({
                           />
                         )}
                         <span className="text-sm text-gray-400 truncate flex-1">
-                          {latestMessage.text}
+                          {latestMessage?.text}
                         </span>
                       </div>
                     )}
