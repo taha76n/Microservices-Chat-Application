@@ -1,16 +1,19 @@
 "use client";
 import React, { useState } from "react";
 import { Loader2, Paperclip, Send, X } from "lucide-react";
-import Image from "next/image";
 
 interface MessageInputProps {
   selectedUser: string | null;
   message: string;
   setMessage: (value: string) => void;
-  handleSendMessage: (e: React.FormEvent, message:string, imageFile?: File | null) => void;
+  handleSendMessage: (
+    e: React.FormEvent,
+    message: string,
+    imageFile?: File | null
+  ) => void;
 }
 const MessageInput = ({
-  selectedUser,
+  // selectedUser,
   message,
   setMessage,
   handleSendMessage,
@@ -37,7 +40,8 @@ const MessageInput = ({
     >
       {imageFile && (
         <div className="relative w-fit">
-          <Image
+  {// eslint-disable-next-line @next/next/no-img-element
+}          <img
             src={URL.createObjectURL(imageFile)}
             alt="preview"
             className="w-24 h-24 object-cover rounded-lg border border-gray-600"
@@ -52,25 +56,38 @@ const MessageInput = ({
         </div>
       )}
       <div className="flex items-center gap-2">
-        <label className="cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-lg px-3 py-2 transition-colors"><Paperclip size={18} className="text-gray-300"/>
-        <input type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target?.files?.[0]
-        if (file && file.type.startsWith("image/")) {
-          setImageFile(file)
-          
-        }
-        }}/>
-        
+        <label className="cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-lg px-3 py-2 transition-colors">
+          <Paperclip size={18} className="text-gray-300" />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target?.files?.[0];
+              if (file && file.type.startsWith("image/")) {
+                setImageFile(file);
+              }
+            }}
+          />
         </label>
-        <input type="text"  className="flex-1 bg-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-400"
-        placeholder={imageFile? "Add a caption..." : "Type a message..."}
-        value={message}
-        onChange={(e)=> setMessage(e.target.value)}/>
-        <button type="submit" disabled={(!imageFile && !message) || (isUploading)} className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-white">
-          {
-            isUploading? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>
-          }
+        <input
+          type="text"
+          className="flex-1 bg-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-400"
+          placeholder={imageFile ? "Add a caption..." : "Type a message..."}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button
+          type="submit"
+          disabled={(!imageFile && !message) || isUploading}
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed text-white"
+        >
+          {isUploading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Send className="w-4 h-4" />
+          )}
         </button>
-        
       </div>
     </form>
   );

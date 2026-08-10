@@ -19,7 +19,7 @@ const userLogin = TryCatch(async (req, res) => {
 
   res
     .status(200)
-    .json({ message: `Otp sent successfully to email ${email}`, otp });
+    .json({ message: `Otp sent successfully to email`, otp });
 });
 
 const verifyUser = TryCatch(async (req, res) => {
@@ -28,16 +28,8 @@ const verifyUser = TryCatch(async (req, res) => {
   if (!otp || !email) {
     return res.status(400).json({ message: "Email and Otp are required" });
   }
-  
-
-  // if (otp !== String || email !== String) {
-  //   return res
-  //     .status(400)
-  //     .json({ message: "Please enter Otp and Email in appropriate format" });
-  // }
 
   const { user, token } = await userService.verifyUser(otp, email);
-  
 
   return res.status(201).json({
     message: "User verified successfully",

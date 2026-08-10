@@ -1,9 +1,14 @@
 "use client";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import Cookies from 'js-cookie';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import Cookies from "js-cookie";
 import axios from "axios";
-import toast, {Toaster} from "react-hot-toast"
-
+import toast, { Toaster } from "react-hot-toast";
 
 export interface User {
   _id: string;
@@ -40,7 +45,7 @@ interface AppContextType {
   fetchUsers: () => Promise<void>;
   users: User[] | null;
   chats: Chats[] | null;
-  setChats: React.Dispatch<React.SetStateAction<Chats[] | null>>
+  setChats: React.Dispatch<React.SetStateAction<Chats[] | null>>;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -56,82 +61,101 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const token = Cookies.get("token")
-      const {data} = await axios.get(`http://localhost:5301/api/v1/user/me`,
-        {headers: {
-          Authorization: `Bearer ${token}`
-        }}
-      )
+      const token = Cookies.get("token");
+      const { data } = await axios.get(`http://localhost:5301/api/v1/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUser(data.user);
       setIsAuth(true);
-      setLoading(false)
-      
+      setLoading(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setIsAuth(false);
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const logoutUser = async () => {
-    Cookies.remove("token")
-    setUser(null)
-    setIsAuth(false)
-    toast.success("User Logged out successfully")
-  }
+    Cookies.remove("token");
+    setUser(null);
+    setIsAuth(false);
+    toast.success("User Logged out successfully");
+  };
 
   const [chats, setChats] = useState<Chats[] | null>(null);
 
   const fetchChats = async () => {
-    const token = Cookies.get("token")
+    const token = Cookies.get("token");
     try {
-      const {data} = await axios.post(`http://localhost:5300/api/v1/chat/all`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const { data } = await axios.post(
+        `http://localhost:5300/api/v1/chat/all`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
-      setChats(data.chats)      
+      );
+      setChats(data.chats);
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
   const [users, setUsers] = useState<User[] | null>(null);
 
   const fetchUsers = async () => {
-    const token = Cookies.get("token")
+    const token = Cookies.get("token");
     try {
-      const {data} = await axios.get(`http://localhost:5301/api/v1/user/user/all`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const { data } = await axios.get(
+        `http://localhost:5301/api/v1/user/user/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
-      setUsers(data.users)      
+      );
+      setUsers(data.users);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUser();
     fetchChats();
-    fetchUsers()
-  }, [])
+    fetchUsers();
+  }, []);
 
   return (
     <AppContext.Provider
-      value={{ user,isAuth, loading, setUser, setIsAuth, logoutUser, fetchUsers, fetchChats, users, chats, setChats}}>
+      value={{
+        user,
+        isAuth,
+        loading,
+        setUser,
+        setIsAuth,
+        logoutUser,
+        fetchUsers,
+        fetchChats,
+        users,
+        chats,
+        setChats,
+      }}
+    >
       {children}
-      <Toaster/>
+      <Toaster />
     </AppContext.Provider>
   );
 };
 
 export const useAppData = (): AppContextType => {
-  const context = useContext(AppContext)
+  const context = useContext(AppContext);
   if (!context) {
-    throw new Error("useAppData must be use within AppProvider")
+    throw new Error("useAppData must be use within AppProvider");
   }
   return context;
-}
+};

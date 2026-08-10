@@ -42,7 +42,7 @@ const getAllChats = async (userId: string) => {
         );
 
         return {
-          user: data,
+          user: data.user,
           chat: {
             ...chat.toObject(),
             latestMessage: chat.latestMessage || null,
@@ -121,22 +121,10 @@ const sendMessage = async (
     chatId: chatId,
     sender: senderId,
     seen: isReceiverInChatRoom,
-    seenAt: isReceiverInChatRoom? new Date() : undefined,
+    ...(isReceiverInChatRoom && { seenAt: new Date() }),
+    // seenAt: isReceiverInChatRoom? new Date() : undefined,
     messageType: "text",
-  };
-
-  // if (imageFile) {
-  //   messageData.image = {
-  //     url: imageFile.path,
-  //     publicId: imageFile.fileName,
-  //   };
-
-  //   messageData.messageType = "image";
-  //   messageData.text = text || "";
-  // } else {
-  //   messageData.text = text;
-  //   messageData.messageType = "text";
-  // }
+  };  
 
   if (imageFile) {
     // Upload the image buffer to Cloudinary
@@ -191,7 +179,7 @@ const sendMessage = async (
   }
 
 
-  return { savedMessage };
+  return savedMessage;
 };
 
 const getMessagesByChat = async (userId: string, chatId: string) => {
@@ -209,7 +197,7 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
     throw new BadRequestError("You are not a participant of this chat");
   }
 
-  const messagesToMarkSeen = await Message.findOne({
+  const messagesToMarkSeen = await Message.find({
     chatId,
     sender: { $ne: userId },
     seen: false,
@@ -233,6 +221,18 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
     (userid) => userid.toString() !== userId.toString()
   );
 
+  if (messagesToMarkSeen.length > 0) {
+    const otherUserSocketId = getReceiverSocketId(otherUserId?.toString())
+    if (otherUserSocketId) {
+      io.to(otherUserSocketId).emit("messageSeen", {
+        chatId: chatId,
+        seenBy: userId,
+        messageIds: messagesToMarkSeen.map((msg) => msg._id)
+
+      })
+    }
+  }
+
   try {
     const data = await axios.get(
       `${config.USER_SERVICE_URL}/api/v1/user/user/${otherUserId}`
@@ -240,21 +240,7 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
 
     if (!otherUserId) {
       throw new Error("No other user");
-    }
-
-    //socket
-
-    if (messagesToMarkSeen.length > 0) {
-      const otherUserSocketId = getReceiverSocketId(otherUserId.toString())
-      if (otherUserSocketId) {
-        io.to(otherUserSocketId).emit("messagesSeen", {
-          chatId: chatId,
-          seenBy: userId,
-          messageIds: messagesToMarkSeen.map((msg) => msg._id)
-
-        })
-      }
-    }
+    }  
 
     return { messages, otherUserId };
   } catch (error) {

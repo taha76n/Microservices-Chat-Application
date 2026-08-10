@@ -137,7 +137,7 @@ const ChatSidebar = ({
         <div className="space-y-2 overflow-y-auto h-full pb-4">
           {chats?.map((chat) => {
             const latestMessage = chat.chat.latestMessage;
-            const isUserSelected = selectedUser === chat.user._id;
+            const isUserSelected = selectedUser === chat.chat._id;
             const isSentByMe = latestMessage?.sender === loggedInUser?._id;
             const unseenCount = chat.chat.unseenCount || 0;
 
@@ -171,7 +171,7 @@ const ChatSidebar = ({
                           isUserSelected ? "text-white" : "text-gray-200"
                         }`}
                       >
-                        {chat?.user?.user?.userName}
+                        {chat?.user?.userName}
                       </span>
                       {unseenCount > 0 && (
                         <div className="bg-red-600 text-white text-xs font-bold rounded-full min-w-5.5 h-5.5 flex items-center justify-center px-2">

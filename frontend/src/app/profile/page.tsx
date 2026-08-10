@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Loading from "@/src/components/Loading";
 import { useAppData } from "@/src/context/AppContext";
 import { ArrowLeft, Save, User, UserCircle } from "lucide-react";
@@ -18,11 +18,11 @@ const ProfilePage = () => {
 
   const editHandler = () => {
     setIsEdit(!isEdit);
-    setName(user?.userName)
+    setName(user?.userName);
   };
 
   const submitHandler = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const token = Cookies.get("token");
 
@@ -40,12 +40,11 @@ const ProfilePage = () => {
       Cookies.set("token", data.token, {
         expires: 15,
         secure: false,
-        path: "/"
+        path: "/",
       });
       toast.success(data.message);
-      setUser(data.user)
-      setIsEdit(false)
-
+      setUser(data.user);
+      setIsEdit(false);
     } catch (error) {
       if (error instanceof AxiosError) {
         console.log(error);
