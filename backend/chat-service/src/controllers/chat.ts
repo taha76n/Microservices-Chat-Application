@@ -2,7 +2,6 @@ import type { Response } from "express";
 import type { AuthenticatedRequest } from "../middlewares/isAuth.js";
 import { TryCatch } from "../utils/TryCatch.js";
 import { chatService } from "../services/chat.js";
-import { logger } from "../configs/logger.js";
 
 const createNewChat = TryCatch(
   async (req: AuthenticatedRequest, res: Response) => {

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Chats, User } from "../context/AppContext";
 import {
   CornerDownRight,
   CornerLeftUp,
@@ -12,6 +11,8 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { Chats } from "../types/chats";
+import { User } from "../types/user";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;

@@ -9,30 +9,8 @@ import {
 import Cookies from "js-cookie";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-
-export interface User {
-  _id: string;
-  userName: string;
-  email: string;
-}
-
-export interface Chat {
-  _id: string;
-  users: string[];
-  latestMessage: {
-    text: string;
-    sender: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  unseenCount?: number;
-}
-
-export interface Chats {
-  _id: string;
-  user: User;
-  chat: Chat;
-}
+import { User } from "../types/user";
+import { Chats } from "../types/chats";
 
 interface AppContextType {
   user: User | null;

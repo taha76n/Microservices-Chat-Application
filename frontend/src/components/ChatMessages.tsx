@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useMemo, useRef } from "react";
 import moment from "moment";
-import { Message } from "../app/chat/page";
-import { User } from "../context/AppContext";
 import { Check, CheckCheck } from "lucide-react";
+import { User } from "../types/user";
+import { Message } from "../types/message";
 
 interface ChatMessageProps {
   selectedUser: string | null;

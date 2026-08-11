@@ -178,7 +178,6 @@ const sendMessage = async (
     
   }
 
-
   return savedMessage;
 };
 
@@ -244,7 +243,7 @@ const getMessagesByChat = async (userId: string, chatId: string) => {
 
     return { messages, otherUserId };
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     return {
       messages,
       user: { _id: otherUserId, userName: "Unknown User" },

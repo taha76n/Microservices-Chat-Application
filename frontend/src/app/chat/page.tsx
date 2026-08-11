@@ -1,6 +1,6 @@
 "use client";
 import ChatSidebar from "@/src/components/ChatSidebar";
-import { useAppData, User, Chats } from "@/src/context/AppContext";
+import { useAppData} from "@/src/context/AppContext";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -11,18 +11,8 @@ import ChatHeader from "@/src/components/ChatHeader";
 import ChatMessages from "@/src/components/ChatMessages";
 import MessageInput from "@/src/components/MessageInput";
 import { useSocketData } from "@/src/context/SocketContext";
-
-export interface Message {
-  _id: string;
-  chatId: string;
-  sender: string;
-  text?: string;
-  image?: { url: string; publicId: string };
-  messageType: "text" | "image";
-  seen: boolean;
-  seenAt?: string;
-  createdAt: Date;
-}
+import { User } from "@/src/types/user";
+import { Message } from "@/src/types/message";
 
 const ChatApp = () => {
   // local state

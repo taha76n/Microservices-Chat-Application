@@ -15,7 +15,6 @@ const userLogin = async (email: string) => {
   }
 
   const otp = crypto.randomInt(10000, 1000000).toString();
-  console.log(otp);
 
   const otpKey = `otp:${email}`;
 
